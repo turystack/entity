@@ -1,2 +1,2 @@
 export * from '@/entity/index.js'
-export * from '@/exceptions/exceptions.test.js'
+export * from '@/exceptions/index.js'
