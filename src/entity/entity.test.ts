@@ -42,4 +42,42 @@ describe('Entity', () => {
 		expect(parsedInstance.isActive()).toBe(true)
 		expect(parsedInstance.isInactive()).toBe(false)
 	})
+
+	it('should register a stable serialization identifier', () => {
+		@Entity('orders.order')
+		class Order {
+			constructor(readonly id: string) {}
+		}
+
+		const serialized = superjson.stringify(new Order('order-1'))
+		const parsed = superjson.parse(serialized)
+
+		expect(serialized).toContain('orders.order')
+		expect(parsed).toBeInstanceOf(Order)
+		expect(parsed).toMatchObject({
+			id: 'order-1',
+		})
+	})
+
+	it('should preserve nested serializable values', () => {
+		@Entity('events.event')
+		class Event {
+			constructor(
+				readonly occurredAt: Date,
+				readonly tags: Set<string>,
+			) {}
+		}
+
+		const event = new Event(
+			new Date('2026-07-18T12:00:00.000Z'),
+			new Set([
+				'created',
+			]),
+		)
+		const parsed = superjson.parse<Event>(superjson.stringify(event))
+
+		expect(parsed).toBeInstanceOf(Event)
+		expect(parsed.occurredAt).toEqual(event.occurredAt)
+		expect(parsed.tags).toEqual(event.tags)
+	})
 })

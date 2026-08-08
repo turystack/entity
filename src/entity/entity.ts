@@ -1,7 +1,7 @@
 import superjson from 'superjson'
 
 type Class = {
-	new (...args: any[]): any
+	new (...args: never[]): object
 }
 
 /**
@@ -19,9 +19,12 @@ type Class = {
  *   createdAt: Date
  * }
  * ```
+ *
+ * @param identifier - Stable serialization identifier. Prefer a namespaced value
+ * such as `orders.order` when class names may be minified or duplicated.
  */
-export function Entity() {
+export function Entity(identifier?: string) {
 	return (Constructor: Class) => {
-		superjson.registerClass(Constructor)
+		superjson.registerClass(Constructor, identifier)
 	}
 }
